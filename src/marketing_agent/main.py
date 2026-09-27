@@ -1,16 +1,20 @@
+from marketing_agent.agents.learning_agent import LearningAgent
 from marketing_agent.utils.logger import get_logger
-from marketing_agent.services.llm_service import LLMService
+
 
 logger = get_logger(__name__)
 
 
 def main() -> None:
     logger.info("Marketing Agent started")
-    llm_service = LLMService()
-    response = llm_service.generate_text(
-        "기업 대상 AI 교육 홍보 문구 3문장 작성해줘"
-    )
-    
+
+    learning_agent = LearningAgent()
+
+    user_request = input("요청을 입력하세요: ")
+
+    response = learning_agent.run(user_request)
+
+    print("\n--- 결과 ---")
     print(response)
 
 

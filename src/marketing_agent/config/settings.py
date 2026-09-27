@@ -8,6 +8,10 @@ class Settings(BaseSettings):
     gemini_api_key: str | None = None
     gemini_model : str | None = None
     
+    google_service_account_file: str
+    google_spreadsheet_id: str
+    google_prompt_sheet_name: str = "prompts"
+    
     vector_db_url: str | None = None
     vector_db_api_key: str | None = None
     
