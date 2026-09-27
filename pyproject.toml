@@ -1,0 +1,42 @@
+[project]
+name = "marketing-agent"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "happyCaveman", email = "leesangwhui@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "pydantic>=2.13.5",
+    "pydantic-settings>=2.15.0",
+    "slack-sdk>=3.44.1",
+]
+
+[project.scripts]
+marketing-agent = "marketing_agent:main"
+
+[build-system]
+requires = ["uv_build>=0.12.13,<0.13.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "ruff>=0.16.7",
+]
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+
+[tool.ruff.lint]
+select = [
+    "E",
+    "F",
+    "I",
+    "UP",
+    "B",
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
