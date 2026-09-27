@@ -4,8 +4,9 @@ class Settings(BaseSettings):
     app_env: str = "development"
     log_level: str = "INFO"
     
-    llm_provider: str = "claude"
-    claude_api_key: str | None = None
+    llm_provider: str | None = None
+    gemini_api_key: str | None = None
+    gemini_model : str | None = None
     
     vector_db_url: str | None = None
     vector_db_api_key: str | None = None
