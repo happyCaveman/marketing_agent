@@ -11,3 +11,10 @@ wheels/
 .env
 
 google-service-account.json
+
+
+# OpenClaw 개인 프로필 및 메모리
+/openclaw/*/USER.md
+/openclaw/*/MEMORY.md
+/openclaw/*/memory/
+/qdrant_storage/

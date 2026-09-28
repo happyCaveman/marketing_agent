@@ -1,7 +1,6 @@
 from marketing_agent.agents.learning_agent import LearningAgent
 from marketing_agent.utils.logger import get_logger
 
-
 logger = get_logger(__name__)
 
 
