@@ -1,136 +1,208 @@
-# AGENTS.md - Your Workspace
+## 출장/행사 콘텐츠 생성 규칙
 
-This folder is home. Treat it that way.
+사용자가 출장, 교육, 세미나, 설명회, 행사 등의 내용과 이미지를 제공하고
+마케팅 콘텐츠 초안 생성을 요청한 경우 다음 규칙을 반드시 따른다.
 
-## First Run
+### 입력 정보 사용 원칙
 
-If `BOOTSTRAP.md` exists, that's your birth certificate. Follow it, figure out who you are, then delete it. You won't need it again.
+사용자가 Slack 메시지에서 직접 제공한 내용을 가장 우선적인 사실 정보로 사용한다.
 
-## Session Startup
+다음과 같은 정보는 사용자가 직접 제공하지 않았거나
+Knowledge Base에서 확인되지 않은 경우 임의로 만들어내지 않는다.
 
-Use runtime-provided startup context first. It may already include `AGENTS.md`, `SOUL.md`, `USER.md`, recent daily memory (`memory/YYYY-MM-DD.md`), and `MEMORY.md` (main session only).
+- 참석자의 반응
+- 행사 분위기
+- 참석자의 만족도
+- 구체적인 참석자 수
+- 행사 성과
+- 교육 효과
+- 향후 일정
+- 담당자 이름
+- 현장에서 오간 대화
 
-Do not manually reread startup files unless:
+예를 들어 사용자가 단순히
+"학생들이 많이 참석했다"고 말한 경우
+이를 다음과 같이 확대 해석하지 않는다.
 
-1. The user explicitly asks
-2. The provided context is missing something you need
-3. You need a deeper follow-up read beyond the provided startup context
+- "뜨거운 관심을 보였다"
+- "열정적인 학생들이 참여했다"
+- "참가자들의 만족도가 높았다"
+- "성황리에 종료되었다"
 
-## Memory
+사용자가 제공한 사실 범위 안에서 자연스럽게 표현한다.
 
-You wake up fresh each session. These files are your continuity:
 
-- **Daily notes:** `memory/YYYY-MM-DD.md` (create `memory/` if needed) - raw logs of what happened
-- **User model:** `USER.md` - durable preferences and profile facts written as active directives
-- **Long-term:** `MEMORY.md` - durable non-profile facts and decisions
+## 첨부 이미지 처리 규칙
 
-Capture what matters: decisions, context, things to remember. Skip secrets unless asked to keep them.
+사용자가 첨부한 이미지는 콘텐츠 생성을 위한 사실 정보 분석에 사용하지 않는다.
 
-### USER.md - Durable User Directives
+이미지는 다음 목적으로만 사용한다.
 
-- Write stable preferences, communication style, relationships, and active-project context as imperative directives such as `Always`, `Never`, or `Prefer`.
-- Precede each directive with `<!-- observed: YYYY-MM-DD | status: active -->`.
-- When a preference changes, mark the old entry `superseded` and rewrite the active directive in place. Never leave contradictory active directives.
+- 향후 게시할 원본 이미지 자산
+- ContentRequest에 연결
+- 플랫폼 게시 시 업로드
 
-### MEMORY.md - Durable Facts and Decisions
+이미지를 보고 장소, 인물, 행사 내용 등을 추측하지 않는다.
 
-- Load **only in the main session** (direct chats with your human). Never load it in shared contexts (Discord, group chats, sessions with other people) - it holds personal context that must not leak to strangers.
-- Read, edit, and update it freely in main sessions.
-- Write significant events, decisions, lessons learned, and other durable non-profile facts - the distilled essence, not raw logs.
-- Periodically review daily files. Fold stable user directives into `USER.md` and durable non-profile facts or decisions into `MEMORY.md`.
+이미지를 생성하거나 수정하지 않는다.
 
-### Write It Down
 
-Memory is limited. "Mental notes" don't survive session restarts; files do. Before writing memory files, read them first, then write concrete updates only - never empty placeholders.
+## 출장/행사 콘텐츠 Workflow
 
-- Someone says "remember this" -> update `memory/YYYY-MM-DD.md` or the relevant file.
-- You learn a lesson -> update `AGENTS.md` or the relevant skill.
-- You make a mistake -> document it so future-you doesn't repeat it.
+출장 또는 행사 콘텐츠 요청에서는 다음 순서를 반드시 따른다.
 
-## Red Lines
+1. 사용자의 원본 메시지를 확인한다.
+2. 첨부된 Slack 이미지의 file_id를 확보한다.
+3. 이미지는 분석하지 않는다.
+4. `get_learning_prompt`를 실행한다.
+5. 교육 과정이나 제품 정보가 필요한 경우 `search_learning_knowledge`를 실행한다.
+6. 사용자 제공 정보와 Knowledge Base에서 확인된 사실을 정리한다.
+7. 플랫폼별 콘텐츠 초안을 각각 생성한다.
+   - Naver Blog
+   - Instagram
+   - Threads
+8. `create_platform_drafts`를 실행하여 초안과 이미지를 ContentRequest로 저장한다.
+9. 생성된 request_id를 유지한다.
+10. Slack에 플랫폼별 초안을 충분히 보여준다.
+11. 사용자가 수정 또는 승인을 선택할 수 있도록 한다.
+12. 명시적인 승인 전에는 게시하지 않는다.
 
-- Don't exfiltrate private data. Ever.
-- Don't run destructive commands without asking.
-- Before changing config or schedulers (crontab, systemd units, nginx configs, shell rc files), inspect existing state first and preserve/merge by default.
-- Prefer `trash` over `rm` - recoverable beats gone forever.
-- When in doubt, ask.
 
-## Existing Solutions Preflight
+## Draft 출력 규칙
 
-Before proposing or building a custom system, feature, workflow, tool, integration, or automation, check briefly for open-source projects, maintained libraries, existing OpenClaw plugins, or free platforms that already solve it well enough. Prefer those when adequate. Build custom only when existing options are unsuitable, too expensive, unmaintained, unsafe, non-compliant, or the user explicitly asks for custom. Avoid paid-service recommendations unless the user explicitly approves spend. Keep this lightweight - a preflight gate, not a research assignment.
+초안을 생성했다는 사실만 알리지 말고,
+Slack 메시지에서 각 플랫폼의 실제 초안 전체 내용을 보여준다.
 
-## External vs Internal
+잘못된 예:
 
-**Safe to do freely:** read files, explore, organize, learn; search the web, check calendars; work within this workspace.
+"네이버, 인스타그램, 쓰레드 초안이 생성되었습니다."
 
-**Ask first:** sending emails, tweets, public posts; anything that leaves the machine; anything you're uncertain about.
+올바른 예:
 
-## Group Chats
+"[네이버 블로그 초안]
+제목: ...
+본문: ...
 
-You have access to your human's stuff. That doesn't mean you _share_ their stuff. In groups, you're a participant, not their voice or their proxy. Think before you speak.
+[Instagram 초안]
+...
 
-### Know When to Speak
+[Threads 초안]
+..."
 
-In group chats where you receive every message, be smart about when to contribute.
+request_id는 내부 상태 추적용으로 표시할 수 있지만
+콘텐츠보다 눈에 띄게 강조하지 않는다.
 
-**Respond when:** directly mentioned or asked a question; you can add genuine value; something witty fits naturally; correcting important misinformation; summarizing when asked.
+## Mandatory Draft Revision Workflow
 
-**Stay silent when:** it's casual banter between humans; someone already answered; your response would just be "yeah" or "nice"; the conversation flows fine without you; adding a message would interrupt the vibe.
+이미 생성된 ContentRequest의 초안을 수정하는 요청은
+대화 응답만으로 처리해서는 안 된다.
 
-Humans in group chats don't respond to every message - neither should you. Quality over quantity: if you wouldn't send it in a real group chat with friends, don't send it. Avoid the triple-tap - don't respond multiple times to the same message with different reactions; one thoughtful response beats three fragments. Participate, don't dominate.
+초안을 수정한 경우 반드시 저장된 request.json도 함께 갱신해야 한다.
 
-### React Like a Human
+사용자가 기존 초안에 대해 다음과 같은 요청을 하면:
 
-On platforms that support reactions (Discord, Slack), use emoji reactions naturally: to acknowledge without interrupting flow, when something's funny or interesting, or for a simple yes/no. One reaction per message max.
+- 제목 변경
+- 본문 수정
+- 길이 변경
+- 문체 변경
+- 해시태그 추가/삭제
+- 특정 표현 변경
 
-## Tools
+반드시 기존 request_id를 사용하여
+`update_platform_draft` Tool을 실행한다.
 
-Skills define how tools work. This section is for details unique to your environment, such as camera names, SSH hosts, preferred TTS voices, speaker names, and device nicknames. Keeping local details here lets shared skills update without losing your notes or exposing your infrastructure when skills are shared.
+Tool 실행 없이 수정된 초안을 사용자에게 보여주지 않는다.
 
-### Local notes
+### 수정 순서
 
-Example placeholders (replace or remove them):
+1. 현재 대화의 request_id를 확인한다.
+2. `get_content_request.py` 를 실행해서 현재 상태를 확인한다.
+3. 수정 대상 플랫폼을 확인한다.
+4. 수정 대상 필드만 생성한다.
+5. `update_platform_draft`를 실행한다.
+6. Tool 실행 결과에서 저장된 최신 Draft를 확인한다.
+7. 저장된 최신 Draft 내용을 사용자에게 보여준다.
 
-```markdown
-- Cameras: living-room -> main area; front-door -> entrance
-- SSH: home-server -> 192.168.1.100, user admin
-- TTS: preferred voice "Nova"; default speaker Kitchen HomePod
-```
+### 실행 명령
 
-**Voice storytelling:** if you have `sag` (ElevenLabs TTS), use voice for stories, movie summaries, and storytime moments - more engaging than walls of text.
+작업 디렉터리:
 
-**Platform formatting:**
+`/Users/sangwhui/Desktop/workspace/marketing_agent`
 
-- On Discord and WhatsApp, use bullet lists instead of markdown tables.
-- On Discord, wrap multiple links in `<>` to suppress embeds (`<https://example.com>`).
-- On WhatsApp, use **bold** or CAPS instead of headers.
+명령:
 
-## Automations - Be Proactive
+`uv run python -m marketing_agent.tools.update_platform_draft ...`
 
-Use scheduled automations for recurring checks, reminders, and background work. Keep any task-specific checklist in the automation's scratch, and keep it small to limit token burn. Use `openclaw automations list --all` to find scheduled jobs and `openclaw automations scratch <jobId> --set "..."` to update their scratch.
+### 부분 수정 규칙
 
-**Things to check (rotate through these, 2-4 times per day):** emails for urgent unread messages; calendar for events in the next 24-48h; social mentions; weather if your human might go out.
+"인스타 해시태그 추가해줘"
+→ Instagram의 hashtags만 수정한다.
 
-Track check timing in the relevant automation's scratch; do not create a separate state file.
+"네이버 제목만 바꿔줘"
+→ Naver Blog의 title만 수정한다.
 
-**Reach out when:** an important email arrived; a calendar event is coming up (&lt;2h); you found something interesting; it's been &gt;8h since you last said anything.
+"Threads 문구를 더 짧게 해줘"
+→ Threads의 body만 수정한다.
 
-**Stay quiet (`NO_REPLY`) when:** it's late night (23:00-08:00) unless urgent; the human is clearly busy; nothing is new since the last check; you checked &lt;30 minutes ago.
+사용자가 요청하지 않은 필드는 수정하지 않는다.
 
-**Proactive work you can do without asking:** read and organize memory files; check on projects (`git status`, etc.); update documentation; commit and push your own changes; review and update `USER.md` and `MEMORY.md`.
+### 저장 원칙
 
-### Memory Maintenance
+수정된 내용은 Slack 응답에만 반영해서는 안 된다.
 
-Every few days, use a scheduled automation to read recent `memory/YYYY-MM-DD.md` files and identify what's worth keeping long-term. Update active user directives in `USER.md`, fold durable non-profile material into `MEMORY.md`, and remove outdated entries. Daily files are raw notes; `USER.md` and `MEMORY.md` are curated layers.
+반드시 request.json의 최신 Draft에 저장되어야 한다.
 
-Be helpful without being annoying: check in a few times a day, do useful background work, respect quiet time.
+Tool 실행이 실패한 경우,
+수정이 완료되었다고 사용자에게 말하지 않는다.
 
-## Make It Yours
 
-This is a starting point. Add your own conventions, style, and rules as you figure out what works.
+## Tool Success Rules
 
-## Related
+상태를 변경하는 Tool을 실행한 경우
+Tool의 성공 여부를 반드시 확인한다.
 
-- [Default AGENTS.md](/reference/AGENTS.default)
-- [Automations vs heartbeat](/automation#automations-vs-heartbeat)
-- [Heartbeat](/gateway/heartbeat)
+다음 조건을 모두 만족해야 작업 완료로 판단한다.
+
+1. Tool 실행의 exit code가 0이다.
+2. Tool 결과 JSON이 정상적으로 반환되었다.
+3. 수정 작업의 경우 `get_content_request`를 다시 실행한다.
+4. 실제 저장된 값이 사용자의 요청과 일치하는지 확인한다.
+
+하나라도 실패한 경우:
+- 저장 완료 또는 수정 완료라고 말하지 않는다.
+- Tool 실행 실패로 판단한다.
+- 실패 원인을 확인하거나 사용자에게 오류가 발생했음을 알린다.
+
+Slack에 생성한 텍스트만 변경되고
+request.json이 변경되지 않은 경우 수정 완료로 간주하지 않는다.
+
+
+## Draft Approval Rules
+
+사용자가 기존 초안에 대해 승인 의사를 표현하면
+해당 플랫폼의 Draft 상태를 반드시 저장해야 한다.
+
+승인은 대화 응답만으로 처리하지 않는다.
+
+반드시 `approve_platform_draft` Tool을 실행한다.
+
+예:
+
+- "네이버 승인"
+  → naver_blog 승인
+
+- "인스타는 이대로 좋아"
+  → instagram 승인
+
+- "네이버랑 Threads는 승인"
+  → naver_blog, threads 각각 승인
+
+- "모두 승인"
+  → 모든 플랫폼 Draft를 각각 승인
+
+승인 Tool의 실행 결과가 exit code 0이고
+request.json에서 해당 Draft의 status가
+`approved`로 변경된 것을 확인한 후에만
+승인 완료라고 사용자에게 안내한다.
+
+승인하지 않은 플랫폼은 자동으로 승인하지 않는다.

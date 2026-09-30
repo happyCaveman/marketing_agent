@@ -18,3 +18,5 @@ google-service-account.json
 /openclaw/*/MEMORY.md
 /openclaw/*/memory/
 /qdrant_storage/
+
+data/temp/
