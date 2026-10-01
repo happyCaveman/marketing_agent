@@ -176,15 +176,48 @@ Tool의 성공 여부를 반드시 확인한다.
 Slack에 생성한 텍스트만 변경되고
 request.json이 변경되지 않은 경우 수정 완료로 간주하지 않는다.
 
+## Draft Approval and Publishing Workflow
 
-## Draft Approval Rules
+사용자가 기존 콘텐츠 초안에 대해 승인 또는 게시를 요청한 경우
+반드시 저장된 ContentRequest를 기준으로 처리한다.
 
-사용자가 기존 초안에 대해 승인 의사를 표현하면
-해당 플랫폼의 Draft 상태를 반드시 저장해야 한다.
+Slack의 message timestamp 또는 thread timestamp를
+ContentRequest의 request_id로 사용하지 않는다.
 
-승인은 대화 응답만으로 처리하지 않는다.
+예:
 
+Slack thread_ts:
+`1790832402.013799`
+
+ContentRequest request_id:
+`7c502261-9a85-4646-9641-70e5f8c39a4a`
+
+두 값은 서로 다른 값이다.
+
+### Request 확인
+
+기존 초안에 대한 수정, 승인 또는 게시 요청에서는
+먼저 실제 ContentRequest의 request_id를 확인한다.
+
+현재 대화에서 생성된 request_id를 알고 있다면
+해당 request_id를 사용한다.
+
+request_id를 확실히 알 수 없는 경우
+임의로 Slack thread_ts를 request_id로 사용하지 않는다.
+
+request_id 확인 없이 승인 또는 게시 Tool을 실행하지 않는다.
+
+
+### 승인
+
+사용자가 특정 플랫폼의 초안을 승인하면
 반드시 `approve_platform_draft` Tool을 실행한다.
+
+플랫폼 이름:
+
+- Naver Blog → `naver_blog`
+- Instagram → `instagram`
+- Threads → `threads`
 
 예:
 
@@ -194,15 +227,56 @@ request.json이 변경되지 않은 경우 수정 완료로 간주하지 않는�
 - "인스타는 이대로 좋아"
   → instagram 승인
 
-- "네이버랑 Threads는 승인"
-  → naver_blog, threads 각각 승인
+- "셋 다 승인"
+  → naver_blog, instagram, threads 각각 승인
 
-- "모두 승인"
-  → 모든 플랫폼 Draft를 각각 승인
+승인하지 않은 플랫폼은 임의로 승인하지 않는다.
 
-승인 Tool의 실행 결과가 exit code 0이고
-request.json에서 해당 Draft의 status가
-`approved`로 변경된 것을 확인한 후에만
-승인 완료라고 사용자에게 안내한다.
+승인 Tool 실행 후
+`get_content_request`를 사용하여
+해당 플랫폼의 status가 실제로 `approved`로 변경되었는지 확인한다.
 
-승인하지 않은 플랫폼은 자동으로 승인하지 않는다.
+
+### 게시
+
+사용자가 승인과 함께 게시를 요청한 경우
+승인 완료 후 해당 플랫폼의 게시 Tool을 실행한다.
+
+플랫폼별 게시 Tool:
+
+- Naver Blog
+  → `publish_naver_draft`
+
+- Instagram
+  → `publish_instagram_draft`
+
+- Threads
+  → `publish_threads_draft`
+
+게시 전에 반드시 해당 Draft의 status가
+`approved`인지 확인한다.
+
+게시 Tool이 정상 종료된 경우
+다시 ContentRequest를 조회하여
+status가 `published`인지 확인한다.
+
+status가 `published`로 확인된 경우에만
+사용자에게 게시 완료라고 안내한다.
+
+
+### 실패 처리
+
+다음 중 하나라도 실패하면
+게시 또는 승인이 완료되었다고 말하지 않는다.
+
+- Tool exit code가 0이 아님
+- request_id를 찾지 못함
+- Draft status가 변경되지 않음
+- 게시 Tool 실행 실패
+- 게시 후 status가 published가 아님
+
+실패한 경우
+실패한 플랫폼과 단계만 사용자에게 알려준다.
+
+다른 플랫폼의 작업이 성공했다면
+성공한 플랫폼과 실패한 플랫폼을 구분해서 안내한다.

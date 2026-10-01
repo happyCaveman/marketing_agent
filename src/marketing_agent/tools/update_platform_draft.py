@@ -1,6 +1,6 @@
 import argparse
 import json
-import re 
+import re
 
 from marketing_agent.services.content_request_service import (
     ContentRequestService,

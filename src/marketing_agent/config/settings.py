@@ -1,12 +1,9 @@
 from pathlib import Path
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 ENV_FILE = PROJECT_ROOT / ".env"
-
-print("PROJECT_ROOT:", PROJECT_ROOT)
-print("ENV_FILE:", ENV_FILE)
-print("ENV_EXISTS:", ENV_FILE.exists())
 
 class Settings(BaseSettings):
     app_env: str = "development"
@@ -30,8 +27,19 @@ class Settings(BaseSettings):
     slack_app_token : str
     
     temp_storage_dir : str
+        
+    naver_browser_profile_dir: str = "data/browser/naver"
+    naver_blog_url: str
+    
+    instagram_access_token : str
+    instagram_account_id : str
+    public_image_url : str
+    
+    threads_access_token : str
+    threads_user_id : str
     
     model_config = SettingsConfigDict(
+        
         env_file=str(ENV_FILE),
         env_file_encoding="utf-8",
         case_sensitive=False,

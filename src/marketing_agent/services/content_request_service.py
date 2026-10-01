@@ -12,6 +12,10 @@ from marketing_agent.services.temporary_storage_service import (
     TemporaryStorageService,
 )
 
+from marketing_agent.utils.logger import get_logger
+
+
+logger = get_logger(__name__)
 
 class ContentRequestService:
     def __init__(self):
@@ -227,3 +231,103 @@ class ContentRequestService:
 
         for draft in request.drafts:
             draft.image_indexes = image_indexes
+            
+    def mark_draft_published(
+        self,
+        request_id: str,
+        platform: str,
+    ) -> ContentRequest:
+        request = self.get_request(
+            request_id=request_id
+        )
+
+        draft = next(
+            (
+                draft
+                for draft in request.drafts
+                if draft.platform == platform
+            ),
+            None,
+        )
+
+        if draft is None:
+            raise ValueError(
+                f"Draft not found: platform={platform}"
+            )
+
+        draft.status = "published"
+
+        self.storage.save_request(
+            request
+        )
+
+        return request
+
+
+    def mark_draft_failed(
+        self,
+        request_id: str,
+        platform: str,
+    ) -> ContentRequest:
+        request = self.get_request(
+            request_id=request_id
+        )
+
+        draft = next(
+            (
+                draft
+                for draft in request.drafts
+                if draft.platform == platform
+            ),
+            None,
+        )
+
+        if draft is None:
+            raise ValueError(
+                f"Draft not found: platform={platform}"
+            )
+
+        draft.status = "failed"
+
+        self.storage.save_request(
+            request
+        )
+
+        return request
+    
+    def cleanup_if_completed(
+        self,
+        request_id: str,
+    ) -> bool:
+        request = self.get_request(
+            request_id=request_id
+        )
+
+        if not request.drafts:
+            return False
+
+        all_published = all(
+            draft.status == "published"
+            for draft in request.drafts
+        )
+
+        if not all_published:
+            logger.info(
+                "ContentRequest cleanup skipped: "
+                "request_id=%s",
+                request_id,
+            )
+
+            return False
+
+        self.storage.delete_request(
+            request_id=request_id
+        )
+
+        logger.info(
+            "ContentRequest cleanup completed: "
+            "request_id=%s",
+            request_id,
+        )
+
+        return True

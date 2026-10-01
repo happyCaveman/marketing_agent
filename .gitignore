@@ -20,3 +20,4 @@ google-service-account.json
 /qdrant_storage/
 
 data/temp/
+data/auth/

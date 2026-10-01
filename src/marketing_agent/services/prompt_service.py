@@ -2,7 +2,6 @@ from marketing_agent.config.settings import settings
 from marketing_agent.services.google_sheets_service import GoogleSheetsService
 from marketing_agent.utils.logger import get_logger
 
-
 logger = get_logger(__name__)
 
 

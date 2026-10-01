@@ -14,7 +14,6 @@ from qdrant_client.models import (
 from marketing_agent.config.settings import settings
 from marketing_agent.utils.logger import get_logger
 
-
 logger = get_logger(__name__)
 
 
@@ -59,7 +58,7 @@ class QdrantService:
         file_id = metadata["file_id"]
 
         for index, (chunk, embedding) in enumerate(
-            zip(chunks, embeddings)
+            zip(chunks, embeddings, strict=False)
         ):
             point_id = str(
                 uuid5(

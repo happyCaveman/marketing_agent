@@ -4,7 +4,6 @@ from googleapiclient.discovery import build
 from marketing_agent.config.settings import settings
 from marketing_agent.utils.logger import get_logger
 
-
 logger = get_logger(__name__)
 
 

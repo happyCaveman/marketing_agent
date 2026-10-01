@@ -14,7 +14,6 @@ from marketing_agent.services.qdrant_service import (
 )
 from marketing_agent.utils.logger import get_logger
 
-
 logger = get_logger(__name__)
 
 
