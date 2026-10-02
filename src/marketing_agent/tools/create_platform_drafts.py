@@ -55,6 +55,15 @@ def main() -> None:
         default="",
     )
 
+    parser.add_argument(
+        "-`-slack-channel-id",
+        required=True,
+    )
+
+    parser.add_argument(
+        "--slack-message-ts",
+        required=True,
+    )
     args = parser.parse_args()
 
     hashtags = [
@@ -91,7 +100,9 @@ def main() -> None:
     request = service.create_request_from_slack(
         source_text=args.source_text,
         drafts=drafts,
-        slack_file_ids=slack_file_ids,
+        slack_file_ids=args.slack_file_ids,
+        slack_channel_id=args.slack_channel_id,
+        slack_message_ts=args.slack_message_ts,
     )
 
     print(

@@ -21,4 +21,7 @@ google-service-account.json
 
 data/temp/
 data/auth/
+data/browser/
 test/
+
+.ruff_cache

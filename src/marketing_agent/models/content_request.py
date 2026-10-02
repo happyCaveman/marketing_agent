@@ -31,6 +31,9 @@ class ContentRequest(BaseModel):
     )
 
     team: str = "learning"
+    
+    slack_channel_id: str | None = None
+    slack_message_ts: str | None = None
 
     source_text: str
 
