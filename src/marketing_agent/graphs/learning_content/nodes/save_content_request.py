@@ -74,6 +74,11 @@ def save_content_request_node(
         "slack_file_ids",
         [],
     )
+    
+    logger.info(
+        "Slack files received by graph: %s",
+        slack_file_ids,
+    )
 
     service = ContentRequestService()
 
@@ -82,6 +87,12 @@ def save_content_request_node(
             source_text=source_text,
             drafts=drafts,
             slack_file_ids=slack_file_ids,
+            slack_channel_id=state[
+                "slack_channel_id"
+            ],
+            slack_message_ts=state[
+                "slack_message_ts"
+            ],
         )
     )
 

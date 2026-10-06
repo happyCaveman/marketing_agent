@@ -1,128 +1,96 @@
 ---
 name: learning-marketing
-description: 러닝사업부 마케팅 콘텐츠 생성, 수정, 승인 및 게시
+description: 러닝사업부의 교육, 출장, 시험 감독, 설명회, 세미나, 행사 관련 마케팅 콘텐츠 생성·수정·승인·게시 업무
 ---
 
 # Learning Marketing
 
-러닝사업부의 교육, 설명회, 세미나, 출장,
-시험 감독 및 행사 관련 마케팅 콘텐츠를 작성한다.
+## New Draft
+
+사용자가 새로운 마케팅 콘텐츠 초안을 요청하면
+직접 Draft를 작성하지 않는다.
+
+반드시 아래 Python Tool을 실행한다.
+
+`cd /Users/sangwhui/Desktop/workspace/marketing_agent && uv run python -m marketing_agent.tools.generate_learning_content --source-text "<사용자 원문>" --slack-channel-id "<현재 Slack channel id>" --slack-message-ts "<현재 원본 Slack message ts>" --slack-file-ids "<첨부된 Slack file id 목록>"`
+
+첨부 파일이 없으면:
+
+`--slack-file-ids ""`
+
+첨부 파일이 여러 개면 쉼표로 연결한다.
+
+예:
+
+`--slack-file-ids "F001,F002,F003"`
+
+### 중요
+
+새 콘텐츠 요청에서는 다음 Tool을 개별적으로 실행하지 않는다.
+
+- get_learning_prompt
+- search_learning_knowledge
+- create_platform_drafts
+
+위 작업은 모두 `generate_learning_content` 내부 LangGraph에서 수행한다.
+
+`generate_learning_content`는 사용자 요청 하나당 한 번만 실행한다.
+
+Tool이 반환한:
+
+- request_id
+- drafts
+
+를 그대로 사용한다.
+
+OpenClaw가 Draft의 내용을 다시 작성하거나 요약하거나 변경하지 않는다.
+
+각 Draft의 다음 필드를 빠뜨리지 않고 출력한다.
+
+Naver Blog:
+- title
+- body
+- hashtags
+
+Instagram:
+- body
+- hashtags
+
+Threads:
+- body
+- hashtags
+
+Tool 실행 전에 사용자에게 초안을 답변하지 않는다.
+
+Tool 실행 없이 request_id를 임의로 만들지 않는다.
+
+초안을 출력한 후 종료한다.
+승인이나 게시를 자동으로 진행하지 않는다.
 
 
-## 콘텐츠 생성 규칙
+첨부 파일이 있는 경우 반드시 Slack file_id를 확인한 뒤
+모든 file_id를 `--slack-file-ids` 인자에 전달한다.
 
-사용자가 제공한 사실만 사용한다.
+예:
 
-사용자가 말하지 않은 다음 내용은 임의로 만들지 않는다.
+첨부 파일:
+- F0C6H8PKJ87
+- F0C6WM3HS2J
 
-- 참석자의 반응
-- 열정
-- 만족도
-- 행사 분위기
-- 성과
-- 교육 효과
-- 감정
+실행:
 
-예를 들어 사용자가 단순히
-"학생 35명이 시험을 봤다"고 말한 경우
+`uv run python -m marketing_agent.tools.generate_learning_content \
+--source-text "<사용자 메시지>" \
+--slack-channel-id "<channel_id>" \
+--slack-message-ts "<message_ts>" \
+--slack-file-ids "F0C6H8PKJ87,F0C6WM3HS2J"`
 
-- 열정적으로 시험에 참여했다
-- 뜨거운 관심을 보였다
-- 모습이 인상적이었다
-- 좋은 결과가 있기를 바란다
+첨부 파일이 존재하는데
+`--slack-file-ids ""`로 실행해서는 안 된다.
 
-등의 내용을 임의로 추가하지 않는다.
+OpenClaw staging 디렉터리의 이미지 경로를
+ContentRequest 이미지 경로로 사용하지 않는다.
 
-첨부 이미지는 내용 분석에 사용하지 않고
-게시용 원본 이미지로만 사용한다.
-
-
-## 플랫폼별 작성 방식
-
-### Naver Blog
-
-- 제목을 작성한다.
-- 세 플랫폼 중 가장 상세하게 작성한다.
-- 기본 3~5개 문단으로 작성한다.
-- 사용자가 제공한 사실을 자연스럽게 풀어서 작성한다.
-- 마지막에 관련 해시태그 4~8개를 작성한다.
-
-### Instagram
-
-- Naver보다 짧고 읽기 쉽게 작성한다.
-- 2~4개의 짧은 문장 또는 문단을 작성한다.
-- 마지막에 해시태그 5~10개를 작성한다.
-
-### Threads
-
-- 업무 현장을 가볍게 공유하는 문체로 작성한다.
-- 3~6개의 짧은 문장을 작성한다.
-- 마지막에 해시태그 2~5개를 작성한다.
-
-
-# Workflow
-
-
-## 새 초안
-
-사용자가 초안 작성을 요청하면:
-
-1. Naver Blog, Instagram, Threads 초안을 작성한다.
-2. 모든 첨부 이미지와 세 Draft를
-   `create_platform_drafts`로 저장한다.
-3. 반환된 request_id를 유지한다.
-4. 실제 Draft 내용을 사용자에게 보여준다.
-5. 여기서 종료한다.
-
-초안 요청에서는 승인하거나 게시하지 않는다.
-
-
-## 수정
-
-기존 Draft 수정 요청이면:
-
-1. 기존 request_id를 사용한다.
-2. `get_content_request`로 현재 내용을 확인한다.
-3. 요청받은 내용만 수정한다.
-4. `update_platform_draft`로 저장한다.
-5. 수정된 내용을 보여준다.
-6. 종료한다.
-
-
-## 승인
-
-승인 요청이면:
-
-1. 기존 request_id를 사용한다.
-2. 요청받은 플랫폼에 대해
-   `approve_platform_draft`를 실행한다.
-3. 승인 결과를 안내한다.
-4. 종료한다.
-
-승인만 요청받은 경우 게시하지 않는다.
-
-
-## 게시
-
-게시 요청이면:
-
-- Naver Blog → `publish_naver_draft`
-- Instagram → `publish_instagram_draft`
-- Threads → `publish_threads_draft`
-
-요청받은 플랫폼의 게시 Tool을 실행하고
-실제 결과를 사용자에게 알려준다.
-
-
-## 중요
-
-새 콘텐츠 요청 하나에는
-ContentRequest 하나만 만든다.
-
-이미지가 여러 장이어도
-하나의 ContentRequest에 모두 저장한다.
-
-기존 Draft 수정 시
-새 ContentRequest를 만들지 않는다.
-
-Slack timestamp를 request_id로 사용하지 않는다.
+이미지는 Slack file_id를 통해
+generate_learning_content에 전달하고,
+ContentRequestService가 data/temp/<request_id>/images에 저장하도록 한다.

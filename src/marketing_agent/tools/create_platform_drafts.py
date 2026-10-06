@@ -56,7 +56,7 @@ def main() -> None:
     )
 
     parser.add_argument(
-        "-`-slack-channel-id",
+        "--slack-channel-id",
         required=True,
     )
 
@@ -100,7 +100,7 @@ def main() -> None:
     request = service.create_request_from_slack(
         source_text=args.source_text,
         drafts=drafts,
-        slack_file_ids=args.slack_file_ids,
+        slack_file_ids=slack_file_ids,
         slack_channel_id=args.slack_channel_id,
         slack_message_ts=args.slack_message_ts,
     )

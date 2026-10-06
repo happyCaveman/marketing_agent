@@ -13,7 +13,8 @@ from marketing_agent.workers.naver_publish import (
 async def publish(
     request_id: str,
     slack_channel_id: str,
-) -> None:
+    cleanup: bool = True,
+) -> dict:
     service = ContentRequestService()
 
     request, draft = service.get_draft(
@@ -47,17 +48,18 @@ async def publish(
             platform="naver_blog",
         )
         
-        service.cleanup_if_completed(
-            request_id=request_id
-        )
-
-        print(
-            json.dumps(
-                request.model_dump(mode="json"),
-                ensure_ascii=False,
-                indent=2,
+        if cleanup:
+            service.cleanup_if_completed(
+                request_id=request_id
             )
-        )
+
+        return {
+            "status": "published",
+            "platform": "naver_blog",
+            "request": request.model_dump(
+                mode="json"
+            ),
+        }
 
     except Exception:
         service.mark_draft_failed(

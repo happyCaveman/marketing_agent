@@ -1,21 +1,91 @@
-import logging 
+import logging
+from pathlib import Path
 
 from marketing_agent.config.settings import settings
 
-def get_logger(name: str) -> logging.Logger:
+
+PROJECT_ROOT = (
+    Path(__file__)
+    .resolve()
+    .parents[3]
+)
+
+LOG_DIR = PROJECT_ROOT / "logs"
+
+LOG_DIR.mkdir(
+    parents=True,
+    exist_ok=True,
+)
+
+LOG_FILE = (
+    LOG_DIR
+    / "marketing_agent.log"
+)
+
+
+def get_logger(
+    name: str,
+) -> logging.Logger:
     logger = logging.getLogger(name)
-    
-    if logger.handlers:
-        return logger
-    
-    logger.setLevel(settings.log_level)
-    
-    handler = logging.StreamHandler()
-    formatter = logging.Formatter(
-        "%(asctime)s | %(levelname)s | %(name)s | %(message)s"
+
+    logger.setLevel(
+        settings.log_level
     )
-    
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
-    
+
+    formatter = logging.Formatter(
+        "%(asctime)s | %(levelname)s | "
+        "%(name)s | %(message)s"
+    )
+
+    has_stream_handler = any(
+        isinstance(
+            handler,
+            logging.StreamHandler,
+        )
+        and not isinstance(
+            handler,
+            logging.FileHandler,
+        )
+        for handler in logger.handlers
+    )
+
+    if not has_stream_handler:
+        stream_handler = (
+            logging.StreamHandler()
+        )
+
+        stream_handler.setFormatter(
+            formatter
+        )
+
+        logger.addHandler(
+            stream_handler
+        )
+
+    has_file_handler = any(
+        isinstance(
+            handler,
+            logging.FileHandler,
+        )
+        for handler in logger.handlers
+    )
+
+    if not has_file_handler:
+        file_handler = (
+            logging.FileHandler(
+                LOG_FILE,
+                encoding="utf-8",
+            )
+        )
+
+        file_handler.setFormatter(
+            formatter
+        )
+
+        logger.addHandler(
+            file_handler
+        )
+
+    logger.propagate = False
+
     return logger

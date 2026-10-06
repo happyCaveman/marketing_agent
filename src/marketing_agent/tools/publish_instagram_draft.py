@@ -16,7 +16,8 @@ from marketing_agent.workers.instagram_publish import (
 async def publish(
     request_id: str,
     slack_channel_id: str,
-) -> None:
+    cleanup: bool = True,
+) -> dict:
     content_request_service = (
         ContentRequestService()
     )
@@ -84,26 +85,20 @@ async def publish(
                 platform="instagram",
             )
         )
-        
-        content_request_service.cleanup_if_completed(
-                    request_id=request_id
-                )
-
-        print(
-            json.dumps(
-                {
-                    "status": "published",
-                    "platform": "instagram",
-                    "media_id": media_id,
-                    "image_url": image_url,
-                    "request": request.model_dump(
-                        mode="json"
-                    ),
-                },
-                ensure_ascii=False,
-                indent=2,
-            )
-        )
+        if cleanup:
+            content_request_service.cleanup_if_completed(
+                        request_id=request_id
+                    )
+        return {
+            "status": "published",
+            "platform": "instagram",
+            "media_id": media_id,
+            "image_urls": image_urls,
+            "request": request.model_dump(
+                mode="json"
+            ),
+        }
+       
 
     except Exception:
         content_request_service.mark_draft_failed(

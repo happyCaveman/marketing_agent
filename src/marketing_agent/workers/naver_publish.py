@@ -394,7 +394,7 @@ class NaverPublishWorker:
         main_frame: FrameLocator,
     ) -> None:
         option = main_frame.get_by_text(
-            "개별사진",
+            "콜라주",
             exact=True,
         )
 
@@ -409,5 +409,5 @@ class NaverPublishWorker:
         await option.click()
 
         logger.info(
-            "Selected Naver multi-image layout: 개별사진"
+            "Selected Naver multi-image layout: 콜라주"
         )

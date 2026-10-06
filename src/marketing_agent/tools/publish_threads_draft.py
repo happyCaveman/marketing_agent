@@ -16,7 +16,8 @@ from marketing_agent.workers.threads_publish import (
 async def publish(
     request_id: str,
     slack_channel_id: str,
-) -> None:
+    cleanup: bool = True
+) -> dict:
     content_request_service = (
         ContentRequestService()
     )
@@ -78,26 +79,21 @@ async def publish(
             )
         )
         
-        content_request_service.cleanup_if_completed(
-                            request_id=request_id
-                        )
+        if cleanup:
+            content_request_service.cleanup_if_completed(
+                                request_id=request_id
+                            )
 
-        print(
-            json.dumps(
-                {
-                    "status": "published",
-                    "platform": "threads",
-                    "media_id": media_id,
-                    "image_url": image_url,
-                    "request": request.model_dump(
-                        mode="json"
-                    ),
-                },
-                ensure_ascii=False,
-                indent=2,
-            )
-        )
-
+        return {
+            "status": "published",
+            "platform": "threads",
+            "media_id": media_id,
+            "image_urls": image_urls,
+            "request": request.model_dump(
+                mode="json"
+            ),
+        }
+        
     except Exception:
         content_request_service.mark_draft_failed(
             request_id=request_id,
