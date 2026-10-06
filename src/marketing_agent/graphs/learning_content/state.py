@@ -13,6 +13,8 @@ class LearningContentState(TypedDict):
     slack_channel_id: str
     slack_message_ts: str
     slack_file_ids: list[str]
+    
+    content_type: NotRequired[str]
 
     # Workflow 진행 중 채워지는 값
     prompt_config: NotRequired[

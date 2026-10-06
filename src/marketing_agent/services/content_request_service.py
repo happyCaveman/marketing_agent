@@ -110,6 +110,7 @@ class ContentRequestService:
         slack_file_ids: list[str],
         slack_channel_id: str | None = None,
         slack_message_ts: str | None = None,
+        content_type: str | None = None,
     ) -> ContentRequest:
         request_id = self._resolve_request_id(
             slack_channel_id=slack_channel_id,
@@ -126,6 +127,7 @@ class ContentRequestService:
         request = ContentRequest(
             request_id=request_id,
             source_text=source_text,
+            content_type=content_type,
             drafts=drafts,
             status="pending_review",
             slack_channel_id=slack_channel_id,
@@ -452,6 +454,16 @@ class ContentRequestService:
                 image_indexes.copy()
             )
 
+    def resolve_request_id(
+        self,
+        slack_channel_id: str,
+        slack_message_ts: str,
+    ) -> str:
+        return self._resolve_request_id(
+            slack_channel_id=slack_channel_id,
+            slack_message_ts=slack_message_ts,
+        )
+        
     def _resolve_request_id(
         self,
         slack_channel_id: str | None,

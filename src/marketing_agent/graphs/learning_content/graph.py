@@ -8,6 +8,10 @@ from marketing_agent.graphs.learning_content.nodes.load_prompt_config import (
     load_prompt_config_node,
 )
 
+from marketing_agent.graphs.learning_content.nodes.classify_content_type import (
+    classify_content_type_node
+)
+
 from marketing_agent.graphs.learning_content.nodes.search_knowledge import (
     search_knowledge_node,
 )
@@ -67,6 +71,12 @@ def build_learning_content_graph():
     )
     
     # node 등록 ---------------------------------------------
+    
+    builder.add_node(
+        "classify_content_type",
+        classify_content_type_node,
+    )
+    
     builder.add_node(
         "initialize_request",
         initialize_request,
@@ -110,7 +120,12 @@ def build_learning_content_graph():
     
     builder.add_edge(
         "initialize_request",
-        "load_prompt_config",
+        "classify_content_type",
+    )
+    
+    builder.add_edge(
+        "classify_content_type",
+        "load_prompt_config"
     )
 
     builder.add_edge(

@@ -21,9 +21,18 @@ def load_prompt_config_node(
 
     prompt_service = PromptService()
 
-    prompt_config = prompt_service.load_prompt(
-        team="learning",
-        prompt_name="system",
+    content_type = state[
+        "content_type"
+    ]
+
+    prompt_config = (
+        prompt_service.load_prompts(
+            team="learning",
+            prompt_names=[
+                "common",
+                content_type,
+            ],
+        )
     )
 
     if not prompt_config:

@@ -85,6 +85,7 @@ def save_content_request_node(
     request = (
         service.create_request_from_slack(
             source_text=source_text,
+            content_type=state["content_type"],
             drafts=drafts,
             slack_file_ids=slack_file_ids,
             slack_channel_id=state[

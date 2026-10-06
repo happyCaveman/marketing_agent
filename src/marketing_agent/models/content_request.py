@@ -36,6 +36,7 @@ class ContentRequest(BaseModel):
     slack_message_ts: str | None = None
 
     source_text: str
+    content_type: Literal["event_review", "certification_info"] | None = None
 
     images: list[ContentImage] = Field(
         default_factory=list

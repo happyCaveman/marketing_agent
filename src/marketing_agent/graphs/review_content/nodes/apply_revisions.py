@@ -1,5 +1,8 @@
 import json
 
+from marketing_agent.graphs.learning_content.nodes.classify_content_type import (
+    classify_content_type,
+)
 from marketing_agent.graphs.review_content.state import (
     ReviewContentState,
 )
@@ -61,10 +64,17 @@ def apply_revisions_node(
 
     prompt_service = PromptService()
 
+    current_request = content_service.get_request(request_id=request_id)
+    content_type = current_request.content_type
+    if content_type is None:
+        content_type = classify_content_type(current_request.source_text)
+        current_request.content_type = content_type
+        content_service.storage.save_request(current_request)
+
     prompt_config = (
-        prompt_service.load_prompt(
+        prompt_service.load_prompts(
             team="learning",
-            prompt_name="system",
+            prompt_names=["common", content_type],
         )
     )
 
@@ -75,12 +85,6 @@ def apply_revisions_node(
         "request_id=%s actions=%s",
         request_id,
         len(revision_actions),
-    )
-
-    current_request = (
-        content_service.get_request(
-            request_id=request_id
-        )
     )
 
     for action in revision_actions:
