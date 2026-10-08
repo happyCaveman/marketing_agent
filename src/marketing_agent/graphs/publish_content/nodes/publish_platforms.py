@@ -13,6 +13,11 @@ from marketing_agent.tools.publish_naver_draft import (
 from marketing_agent.tools.publish_threads_draft import (
     publish as publish_threads,
 )
+
+from marketing_agent.tools.publish_facebook_draft import(
+    publish as publish_facebook,
+)
+
 from marketing_agent.utils.logger import (
     get_logger,
 )
@@ -205,6 +210,13 @@ async def _publish_platform(
             cleanup=False,
         )
 
+    if platform == "facebook":
+        return await publish_facebook(
+            request_id=request_id,
+            slack_channel_id=slack_channel_id,
+            cleanup=False,
+        )
+        
     raise ValueError(
         f"Unsupported publish platform: {platform}"
     )

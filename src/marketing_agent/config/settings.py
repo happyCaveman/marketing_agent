@@ -33,10 +33,16 @@ class Settings(BaseSettings):
     
     instagram_access_token : str
     instagram_account_id : str
-    public_image_url : str
     
     threads_access_token : str
     threads_user_id : str
+    
+    facebook_page_id : str
+    facebook_page_access_token : str
+    
+    supabase_url : str
+    supabase_service_role_key : str
+    supabase_storage_bucket : str
     
     model_config = SettingsConfigDict(
         

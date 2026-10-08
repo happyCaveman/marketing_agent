@@ -8,6 +8,9 @@ from marketing_agent.utils.logger import (
     get_logger,
 )
 
+from marketing_agent.services.supabase_storage_service import (
+    SupabaseStorageService,
+)
 
 logger = get_logger(__name__)
 
@@ -49,6 +52,14 @@ def finalize_publish_node(
     cleanup_completed = False
 
     if all_published:
+        supabase_storage = (
+            SupabaseStorageService()
+        )
+
+        supabase_storage.delete_request_images(
+            request_id=request_id
+        )
+
         cleanup_completed = (
             service.cleanup_if_completed(
                 request_id=request_id

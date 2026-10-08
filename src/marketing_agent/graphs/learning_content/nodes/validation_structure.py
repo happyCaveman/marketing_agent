@@ -76,6 +76,7 @@ def _validate_structure(
         "naver_blog",
         "instagram",
         "threads",
+        "facebook"
     }
 
     actual_platforms = set(
@@ -85,7 +86,7 @@ def _validate_structure(
     if actual_platforms != required_platforms:
         errors.append(
             "Drafts must contain exactly "
-            "naver_blog, instagram, threads."
+            "naver_blog, instagram, threads, facebook."
         )
 
     for platform in required_platforms:

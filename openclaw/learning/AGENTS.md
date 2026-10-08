@@ -77,6 +77,11 @@ cd /Users/sangwhui/Desktop/workspace/marketing_agent && \
 - `PYTHONPATH`를 변경해 import 오류를 우회하지 않습니다.
 - 실행 오류가 나면 실제 실행 명령과 오류를 확인하고, 이전 실패만으로 현재 요청도 실패했다고 판단하지 않습니다.
 
+새 콘텐츠 생성 성공 응답에는 반드시 실제 `generate_learning_content` CLI의 JSON 출력에서 반환된 `request_id`만 사용한다.
+
+`CR-20261008-001` 같은 임의의 요청 ID를 생성하지 않는다.
+
+CLI 실행 결과에 `request_id`가 없으면 생성 성공으로 응답하지 않는다.
 
 # 절대 금지
 
@@ -85,6 +90,7 @@ cd /Users/sangwhui/Desktop/workspace/marketing_agent && \
 - 직접 Naver Blog 콘텐츠 작성
 - 직접 Instagram 콘텐츠 작성
 - 직접 Threads 콘텐츠 작성
+- 직접 Facebook 콘텐츠 작성
 - 사용자의 원문을 요약해서 Tool 인자로 전달
 - 사용자의 수정 요청을 다른 표현이나 방향으로 바꿔 Tool에 전달
 - 사용자가 말하지 않은 홍보 방향 추가

@@ -7,6 +7,7 @@ PlatformName = Literal[
     "naver_blog",
     "instagram",
     "threads",
+    "facebook",
 ]
 
 DraftStatus = Literal[

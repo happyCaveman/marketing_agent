@@ -139,11 +139,12 @@ def _build_generation_prompt(
 
 [작업]
 사용자 제공 정보와 Knowledge Base에서 확인된 사실만 사용하여
-다음 세 플랫폼의 마케팅 콘텐츠 초안을 작성하세요.
+다음 네개 플랫폼의 마케팅 콘텐츠 초안을 작성하세요.
 
 - Naver Blog
 - Instagram
 - Threads
+- Facebook
 
 사용자가 제공하지 않은 사실을 추측하지 마세요.
 
@@ -174,6 +175,15 @@ JSON 외의 설명, Markdown 코드블록, 추가 문장은 출력하지 마세�
       "platform": "threads",
       "title": null,
       "body": "Threads 본문",
+      "hashtags": [
+        "#해시태그1",
+        "#해시태그2"
+      ]
+    }}
+    {{
+      "platform": "facebook",
+      "title": null,
+      "body": "Facebook 본문",
       "hashtags": [
         "#해시태그1",
         "#해시태그2"
@@ -295,6 +305,7 @@ def _parse_drafts(
         "naver_blog",
         "instagram",
         "threads",
+        "facebook",
     }
 
     actual_platforms = {

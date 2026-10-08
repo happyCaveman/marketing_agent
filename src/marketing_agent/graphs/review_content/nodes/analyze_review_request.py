@@ -106,6 +106,8 @@ instagram
 Threads:
 threads
 
+Facebook:
+facebook
 
 [수정 가능한 필드]
 
@@ -125,8 +127,8 @@ revisions에 넣지 마세요.
 3. 사용자가 승인 의사를 표현한 플랫폼만
 approvals에 포함하세요.
 
-4. "모두 승인", "셋 다 승인" 등은
-naver_blog, instagram, threads 모두를 의미합니다.
+4. "모두 승인", "넷 다 승인" 등은
+naver_blog, instagram, threads, facebook 모두를 의미합니다.
 
 5. 승인 요청과 수정 요청은 동시에 존재할 수 있습니다.
 
@@ -260,6 +262,7 @@ def _parse_analysis_result(
         "naver_blog",
         "instagram",
         "threads",
+        "facebook"
     }
 
     allowed_fields = {

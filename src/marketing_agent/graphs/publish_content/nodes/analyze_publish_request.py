@@ -105,6 +105,9 @@ instagram
 Threads:
 threads
 
+Facebook:
+facebook
+
 
 [분석 규칙]
 
@@ -119,7 +122,7 @@ naver_blog, instagram, threads 모두를 의미합니다.
 
 4. "다 게시해줘", "전부 올려줘",
 "모두 게시해줘"는
-naver_blog, instagram, threads 모두를 의미합니다.
+naver_blog, instagram, threads, facebook 모두를 의미합니다.
 
 5. "승인할게. 게시해줘."처럼
 승인과 게시를 함께 요청할 수 있습니다.
@@ -147,12 +150,14 @@ naver_blog, instagram, threads 모두를 의미합니다.
   "approvals": [
     "naver_blog",
     "instagram",
-    "threads"
+    "threads",
+    "facebook"
   ],
   "publish": [
     "naver_blog",
     "instagram",
-    "threads"
+    "threads",
+    "facebook"
   ]
 }}
 
@@ -256,6 +261,7 @@ def _parse_analysis_result(
         "naver_blog",
         "instagram",
         "threads",
+        "facebook"
     }
 
     for platform in approvals:

@@ -12,6 +12,12 @@ OpenClaw는 콘텐츠를 직접 작성하지 않습니다.
 콘텐츠 작성 규칙과 콘텐츠 유형별 작성 방식은
 Google Sheet Prompt와 LangGraph가 관리합니다.
 
+게시 요청에서는 현재 thread의 기존 ContentRequest request_id를 사용한다.
+request_id를 추측하거나 새로 만들지 않는다.
+
+`publish_learning_content` 실행 전에 해당 request_id가 실제로 존재하는지 임의 추측하지 말고,
+CLI를 그대로 실행한다.
+
 
 # 1. 새 콘텐츠 생성
 
@@ -162,6 +168,15 @@ Slack에서는 다음 내용을 사용자에게 보여줍니다.
 해시태그:
 ...
 
+[Facebook 초안]
+
+본문:
+...
+
+해시태그:
+...
+
+
 마지막에 자연스럽게 다음과 같이 안내할 수 있습니다.
 
 "내용을 확인해 보시고 수정하거나 승인할 부분이 있으면 말씀해 주세요."
@@ -178,7 +193,7 @@ Slack에서는 다음 내용을 사용자에게 보여줍니다.
 - "인스타 해시태그 2개 빼줘"
 - "Threads 승인할게"
 - "네이버 수정하고 인스타 승인할게"
-- "셋 다 승인할게"
+- "넷 다 승인할게"
 
 
 ## 실행
@@ -198,7 +213,7 @@ OpenClaw가 수정 방향을 추가하거나 변경하지 않습니다.
 예:
 
 - "게시해줘"
-- "셋 다 게시해줘"
+- "넷 다 게시해줘"
 - "다 승인하고 게시해줘"
 - "인스타랑 Threads만 올려줘"
 
@@ -232,6 +247,7 @@ OpenClaw가 수정 방향을 추가하거나 변경하지 않습니다.
 - publish_naver_draft
 - publish_instagram_draft
 - publish_threads_draft
+- publish_facebook_draft
 
 통합 Workflow만 사용합니다.
 
