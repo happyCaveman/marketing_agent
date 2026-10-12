@@ -2,7 +2,7 @@
 
 Slack에서 요청을 받으면 OpenClaw 기반 **Learning Agent**가 Google Sheets 프롬프트와 Qdrant RAG 검색을 활용해 Gemini로 마케팅 콘텐츠 초안을 생성하고, Supabase 공개 URL로 이미지를 준비한 뒤 플랫폼별 Worker가 네이버 블로그 · Instagram · Facebook · Threads에 게시합니다. 게시 결과는 다시 Slack으로 회신됩니다.
 
-**Stack** · Slack · OpenClaw Gateway · Gemini · Google Sheets / Drive · Qdrant · Supabase Storage · Publish Workers ×4
+**Stack** - Slack · OpenClaw Gateway · LangGraph · GeminiAPI · Google Sheets / Drive · Qdrant · Supabase Storage · Publish Workers ×4
 
 ## 1. 전체 시스템 구성도
 
